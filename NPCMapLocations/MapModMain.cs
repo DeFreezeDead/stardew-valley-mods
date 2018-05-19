@@ -28,7 +28,6 @@ namespace NPCMapLocations
         public static Texture2D buildings;
         public static string saveName;
         private static int customNpcId;
-        private static bool snappyMenuOption;
         private static bool[] showSecondaryNPCs = new Boolean[5];
         private static MapModMapPage modMapPage;
         private static Dictionary<string, int> markerCrop; // NPC head crops, top left corner (0, y), width = 16, height = 15 
@@ -55,7 +54,6 @@ namespace NPCMapLocations
             GraphicsEvents.OnPostRenderGuiEvent += GraphicsEvents_OnPostRenderGuiEvent;
             InputEvents.ButtonPressed += InputEvents_ButtonPressed;
             TimeEvents.AfterDayStarted += TimeEvents_AfterDayStarted;
-            MenuEvents.MenuClosed += MenuEvents_MenuClosed;
         }
 
         // Load config and other one-off data
@@ -65,7 +63,6 @@ namespace NPCMapLocations
             config = modHelper.ReadJsonFile<MapModConfig>($"config/{saveName}.json") ?? new MapModConfig();
             markerCrop = MapModConstants.MarkerCrop;
             customNPCs = config.CustomNPCs;
-            snappyMenuOption = Game1.options.snappyMenus;
             HandleCustomMods();
         }
 
@@ -255,8 +252,6 @@ namespace NPCMapLocations
             if (!Game1.hasLoadedGame) { return; }
             if (!(Game1.activeClickableMenu is GameMenu)) { return; }
             if (!IsMapOpen((GameMenu)Game1.activeClickableMenu)) { return; }
-            if (Game1.options.snappyMenus)
-                modHelper.Reflection.GetField<Boolean>(Game1.options, "snappyMenus").SetValue(false);
 
             GetFarmBuildingLocs();
             UpdateMarkers();
@@ -607,26 +602,6 @@ namespace NPCMapLocations
                 b.Draw(Game1.mouseCursors, new Vector2((float)Game1.getOldMouseX(), (float)Game1.getOldMouseY()), new Rectangle?(Game1.getSourceRectForStandardTileSheet(Game1.mouseCursors, (Game1.options.gamepadControls ? 44 : 0), 16, 16)), Color.White, 0f, Vector2.Zero, ((float)Game1.pixelZoom + Game1.dialogueButtonScale / 150f), SpriteEffects.None, 1f);
             }
 
-        }
-
-        // Hack to disable snappy menu with Map Page since ModMapPage doesn't replace the menu
-        private void MenuEvents_MenuClosed(object sender, EventArgsClickableMenuClosed e)
-        {
-            if (!Game1.hasLoadedGame || Game1.options == null) { return; }
-            if (e.PriorMenu is GameMenu menu)
-            {
-                // Reset option after map sets option to false
-                if (IsMapOpen(menu))
-                {
-                    modHelper.Reflection.GetField<Boolean>(Game1.options, "snappyMenus").SetValue(snappyMenuOption);
-                }
-                else
-                // Handle any option changes by the player
-                // Caveat: If player is turning snappy menu on, they MUST close the menu to update the stored menu option
-                {
-                    snappyMenuOption = Game1.options.snappyMenus;
-                }
-            }
         }
 
         // For debugging
