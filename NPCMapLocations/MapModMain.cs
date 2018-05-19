@@ -46,8 +46,8 @@ namespace NPCMapLocations
         {
             modHelper = helper;
             monitor = this.Monitor;
-            MapModMain.map = MapModMain.modHelper.Content.Load<Texture2D>(@"content/map", ContentSource.ModFolder); // Load modified map page
-            MapModMain.buildings = MapModMain.modHelper.Content.Load<Texture2D>(@"content/buildings", ContentSource.ModFolder); // Load cfarm buildings
+            MapModMain.map = MapModMain.modHelper.Content.Load<Texture2D>(@"assets/map", ContentSource.ModFolder); // Load modified map page
+            MapModMain.buildings = MapModMain.modHelper.Content.Load<Texture2D>(@"assets/buildings", ContentSource.ModFolder); // Load cfarm buildings
             SaveEvents.AfterLoad += SaveEvents_AfterLoad;
             GameEvents.UpdateTick += GameEvents_UpdateTick;
             GraphicsEvents.OnPostRenderEvent += GraphicsEvents_OnPostRenderEvent;
@@ -364,7 +364,7 @@ namespace NPCMapLocations
 
         // MAIN METHOD FOR PINPOINTING NPCS ON THE MAP
         // Calculated from mapping of game tile positions to pixel coordinates of the map in MapModConstants. 
-        // Requires MapModConstants and modified map page in ./content 
+        // Requires MapModConstants and modified map page in ./assets 
         public static Vector2 LocationToMap(string location, int tileX = -1, int tileY = -1, bool isFarmer = false)
         {
             if (location == null || !MapModConstants.MapVectors.ContainsKey(location))
